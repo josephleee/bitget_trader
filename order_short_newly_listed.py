@@ -1,6 +1,7 @@
 import requests
 import json
 import jsondiff
+import os 
 from modules.order_module import BitgetOrder
 from modules.alert_module import send_message_to_slack
 
@@ -9,8 +10,9 @@ def get_bitget_list():
     headers = {"Content-Type": "application/json"}
     data = {"languageType": 0}
 
+    dir_path = os.path.dirname(os.path.realpath(__file__))
     # Check if response is different from saved data
-    with open("./data/USDT_UMCBL.json", "r") as f:
+    with open(dir_path+"/data/USDT_UMCBL.json", "r") as f:
         saved_data = json.load(f)
 
     response = requests.post(url, headers=headers, json=data)
