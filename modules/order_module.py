@@ -1,10 +1,11 @@
 import json
 import ccxt
 from modules import alert_module
+from os.path import dirname, abspath
 
 class BitgetOrder():
     def __init__(self, **kwargs):
-        self.fpath = "./"
+        self.fpath = dirname(dirname(abspath(__file__)))
         fname_secret = "secret.json"
         fname_setting = "settings.json"
         with open(self.fpath+fname_secret, "r") as r:
