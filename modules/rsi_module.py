@@ -21,15 +21,18 @@ class RsiAlgorithm:
         secret_key = cred.get("secret_key")
         passphrase = cred.get("passphrase")
 
+        def _conv_int(a):
+            return int(a) if a else None
+
         self.candle_range        = kwargs.get("candle_range", '1h')
         self.symbol              = settings.get("symbol")
         self.is_order_limit      = settings.get("is_order_limit")
-        self.amount_usdt         = int(settings.get("amount_usdt"))
-        self.leverage            = int(settings.get("leverage"))
-        self.rsi_min             = int(settings.get("rsi_min"))
-        self.rsi_max             = int(settings.get("rsi_max"))
-        self.limit_order_adjust  = int(settings.get("limit_order_adjust"))
-        self.sl_percent          = int(settings.get("sl_percent"))
+        self.amount_usdt         = _conv_int(settings.get("amount_usdt"))
+        self.leverage            = _conv_int(settings.get("leverage"))
+        self.rsi_min             = _conv_int(settings.get("rsi_min"))
+        self.rsi_max             = _conv_int(settings.get("rsi_max"))
+        self.limit_order_adjust  = _conv_int(settings.get("limit_order_adjust"))
+        self.sl_percent          = _conv_int(settings.get("sl_percent"))
         self.bitget = ccxt.bitget({
             'apiKey': api_key,
             'secret': secret_key,
