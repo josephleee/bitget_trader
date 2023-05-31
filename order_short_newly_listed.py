@@ -5,14 +5,15 @@ import os
 from modules.order_module import BitgetOrder
 from modules.alert_module import send_message_to_slack
 
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+
 def get_bitget_list():
     url = "https://www.bitget.com/v1/trigger/tracking/getOpenSymbol"
     headers = {"Content-Type": "application/json"}
     data = {"languageType": 0}
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
     # Check if response is different from saved data
-    with open(dir_path+"/data/USDT_UMCBL.json", "r") as f:
+    with open(DIR_PATH+"/data/USDT_UMCBL.json", "r") as f:
         saved_data = json.load(f)
 
     response = requests.post(url, headers=headers, json=data)
@@ -45,7 +46,7 @@ if response_json != saved_data:
         send_message_to_slack(f"test order, symbol: {symbol}")
 
     # Save new response to file
-    with open("./data/USDT_UMCBL.json", "w") as f:
+    with open(DIR_PATH + "/data/USDT_UMCBL.json", "w") as f:
         json.dump(response_json, f, indent=4)
         
 
