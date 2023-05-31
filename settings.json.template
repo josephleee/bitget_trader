@@ -1,0 +1,10 @@
+{
+    "leverage": "",
+    "symbol": "",
+    "rsi_min": "",
+    "rsi_max": "",
+    "is_order_limit": true,
+    "limit_order_adjust": "",
+    "sl_percent": "",
+    "amount_usdt": 0
+}
