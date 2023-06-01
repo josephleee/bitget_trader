@@ -41,9 +41,9 @@ if response_json != saved_data:
 
     bitget = BitgetOrder()
     for symbol in umcbl_chg:
-        # orders = bitget.order(symbol, amount=1)
+        # orders = bitget.order(symbol, margin_mode="cross", amount=1)
         # send_message_to_slack(orders)
-        send_message_to_slack(f"test order, symbol: {symbol}")
+        send_message_to_slack(f"symbol: {symbol}")
 
     # Save new response to file
     with open(DIR_PATH + "/data/USDT_UMCBL.json", "w") as f:

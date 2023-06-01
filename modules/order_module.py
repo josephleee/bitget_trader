@@ -38,11 +38,11 @@ class BitgetOrder():
                 'defaultType': 'swap',
             },
         })
-        if self.symbol:
-            self.bitget.set_margin_mode("cross", self.symbol)
+        if self.symbol and self.margin_mode:
+            self.bitget.set_margin_mode(self.margin_mode, self.symbol)
 
     
-    def order(self, symbol, margin_mode: str = "cross", holdSide: str = "short", amount: int = 100, **kwargs):
+    def order(self, symbol, margin_mode: str = "fixed", holdSide: str = "short", amount: int = 100, **kwargs):
         ret = {}
         self.bitget.set_margin_mode(margin_mode, symbol)
         if "leverage" in kwargs:
