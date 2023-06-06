@@ -15,7 +15,7 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 FILE_NAME = "USDT_UMCBL_HQ"
 
 def p_log(message):
-    return datetime.datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S') + "| " + message
+    print(datetime.datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S') + "| " + message)
 
 def get_bitget_list():
     url = "https://www.bitget.com/v1/trigger/tracking/getOpenSymbol"
@@ -41,44 +41,49 @@ def get_bitget_list_homequotation():
 
     response = requests.post(url, headers=headers, json=data)
     response_json = response.json()["data"]
+    response_json = [i.get("symbolId") for i in response_json]
     return response_json, saved_data
     
 
 
 # response_json, saved_data = get_bitget_list()
 response_json, saved_data = get_bitget_list_homequotation()
-if response_json != saved_data:
-    umcbl_chg = []
+if not saved_data:
+    with open(DIR_PATH + f"/data/{FILE_NAME}.json", "w") as f:
+        json.dump(response_json, f, indent=4)
+else:
+    if response_json != saved_data:
+        umcbl_chg = []
 
-    # If different, p_log only the differences
-    changes = jsondiff.diff(saved_data, response_json, syntax="explicit")
-    if "HQ" in FILE_NAME:
-        for i in changes:
-            p_log(f"Change in {i['symbolId']}")
-            umcbl_chg.append(i['symbolId'])
-    else:
+        # If different, p_log only the differences
+        changes = jsondiff.diff(saved_data, response_json, syntax="explicit")
+        
         for k, v in changes.items():
             p_log(f"----{k}----")
             for i in v:
                 if str(k) == "$delete":
                     p_log(f"Delete in {i}")
                 else:
-                    p_log("Change in {}: \n{}".format(i[0], i[1]))
-                    if "UMCBL" in i[1].get("symbolId"):
-                        umcbl_chg.append(i[1].get("symbolId"))
+                    p_log("{}: {}".format(i[0], i[1]))
+                    if "HQ" in FILE_NAME:
+                        symbolId = i[1]
+                    else:
+                        symbolId = i[1].get("symbolId")
+                    if "UMCBL" in symbolId:
+                        umcbl_chg.append(symbolId)
 
-    p_log(f"Changes: {umcbl_chg}")
+        p_log(f"Changes: {umcbl_chg}")
 
-    bitget = BitgetOrder()
-    for symbol in umcbl_chg:
-        # orders = bitget.order(symbol, margin_mode="cross", amount=1)
-        # send_message_to_slack(orders)
-        send_message_to_slack(f"symbol: {symbol}")
-        # pass
+        # bitget = BitgetOrder()
+        for symbol in umcbl_chg:
+            # orders = bitget.order(symbol, margin_mode="cross", amount=1)
+            # send_message_to_slack(orders)
+            # send_message_to_slack(f"symbol: {symbol}")
+            pass
 
-    # Save new response to file
-    with open(DIR_PATH + f"/data/{FILE_NAME}.json", "w") as f:
-        json.dump(response_json, f, indent=4)
-        
+        # Save new response to file
+        with open(DIR_PATH + f"/data/{FILE_NAME}.json", "w") as f:
+            json.dump(response_json, f, indent=4)
+            
 
 
