@@ -74,11 +74,11 @@ else:
 
         p_log(f"Changes: {umcbl_chg}")
 
-        # bitget = BitgetOrder()
+        bitget = BitgetOrder()
         for symbol in umcbl_chg:
             # orders = bitget.order(symbol, margin_mode="cross", amount=1)
             # send_message_to_slack(orders)
-            # send_message_to_slack(f"symbol: {symbol}")
+            send_message_to_slack(f"symbol: {symbol}")
             pass
 
         # Save new response to file
