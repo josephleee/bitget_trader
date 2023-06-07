@@ -195,5 +195,6 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python
 
 secret.json
-*.json
+slack.json
+settings.json
 .vscode
