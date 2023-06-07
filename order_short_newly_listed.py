@@ -30,6 +30,7 @@ def get_bitget_list():
 
     response = requests.post(url, headers=headers, json=data)
     response_json = response.json()["data"]
+    response_json = [i.get("symbolId") for i in response_json]
     return response_json, saved_data
 
 
@@ -60,11 +61,9 @@ if not saved_data:
     with open(DIR_PATH + f"/data/{FILE_NAME}.json", "w") as f:
         json.dump(response_json, f, indent=4)
 else:
-    if response_json != saved_data:
+    changes = jsondiff.diff(sorted(saved_data), sorted(response_json), syntax="explicit")
+    if changes:
         umcbl_chg = []
-
-        # If different, p_log only the differences
-        changes = jsondiff.diff(saved_data, response_json, syntax="explicit")
 
         for k, v in changes.items():
             p_log(f"----{k}----")
@@ -73,12 +72,9 @@ else:
                     p_log(f"Delete in {i}")
                 else:
                     p_log("{}: {}".format(i[0], i[1]))
-                    if "HQ" in FILE_NAME:
-                        symbolId = i[1]
-                    else:
-                        symbolId = i[1].get("symbolId")
+                    symbolId = i[1]
                     if "UMCBL" in symbolId:
-                        umcbl_chg.append(symbolId)
+                        umcbl_chg.append(i[1])
 
         p_log(f"Changes: {umcbl_chg}")
 
