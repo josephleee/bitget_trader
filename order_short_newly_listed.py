@@ -7,6 +7,8 @@ from modules.alert_module import send_message_to_slack
 import datetime
 import pytz
 
+ENV = os.getenv('env')
+
 # Get the current time in Korea
 tz = pytz.timezone('Asia/Seoul')
 
@@ -75,11 +77,16 @@ else:
         p_log(f"Changes: {umcbl_chg}")
 
         bitget = BitgetOrder()
-        for symbol in umcbl_chg:
-            # orders = bitget.order(symbol, margin_mode="cross", amount=1)
-            # send_message_to_slack(orders)
-            send_message_to_slack(f"symbol: {symbol}")
-            pass
+        try:
+            for symbol in umcbl_chg:
+                if ENV == "prod":
+                    orders = bitget.order(symbol, margin_mode="cross", amount=100, leverage=5)
+                    send_message_to_slack(f"symbol: {symbol}")
+                    send_message_to_slack(orders)
+                else:
+                    send_message_to_slack(f"symbol: {symbol}")
+        except Exception as e:
+            send_message_to_slack(str(e))
 
         # Save new response to file
         with open(DIR_PATH + f"/data/{FILE_NAME}.json", "w") as f:
