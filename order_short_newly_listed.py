@@ -78,6 +78,8 @@ else:
 
         bitget = BitgetOrder()
         try:
+            if len(umcbl_chg) > 3:
+                raise ValueError(f"Too many updated symbols: {len(umcbl_chg)}\n{umcbl_chg}")
             for symbol in umcbl_chg:
                 if ENV == "prod":
                     orders = bitget.order(symbol, margin_mode="cross", amount=100, leverage=5)
