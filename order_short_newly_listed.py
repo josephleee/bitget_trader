@@ -7,7 +7,7 @@ from modules.alert_module import send_message_to_slack
 import datetime
 import pytz
 
-ENV = os.getenv('env')
+ENV = os.getenv("env")
 
 # Get the current time in Korea
 tz = pytz.timezone("Asia/Seoul")
@@ -19,6 +19,11 @@ FILE_NAME = "USDT_UMCBL_HQ"
 
 def p_log(message):
     print(datetime.datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S") + "| " + message)
+
+
+def save_json_file(data):
+    with open(DIR_PATH + f"/data/{FILE_NAME}.json", "w") as f:
+        json.dump(data, f, indent=4)
 
 
 def get_bitget_list():
@@ -60,8 +65,7 @@ def get_bitget_list_homequotation():
 # response_json, saved_data = get_bitget_list()
 response_json, saved_data = get_bitget_list_homequotation()
 if not saved_data:
-    with open(DIR_PATH + f"/data/{FILE_NAME}.json", "w") as f:
-        json.dump(response_json, f, indent=4)
+    save_json_file(response_json)
 else:
     changes = jsondiff.diff(sorted(saved_data), sorted(response_json), syntax="explicit")
     if changes:
@@ -72,6 +76,7 @@ else:
             for i in v:
                 if str(k) == "$delete":
                     p_log(f"Delete in {i}")
+                    save_json_file(saved_data.pop(i))
                 else:
                     p_log("{}: {}".format(i[0], i[1]))
                     symbolId = i[1]
@@ -79,7 +84,7 @@ else:
                         umcbl_chg.append(i[1])
 
         p_log(f"Changes: {umcbl_chg}")
-
+    if umcbl_chg:
         bitget = BitgetOrder()
         try:
             if len(umcbl_chg) > 3:
@@ -97,5 +102,4 @@ else:
         send_message_to_slack(f"symbols: {umcbl_chg}")
 
         # Save new response to file
-        with open(DIR_PATH + f"/data/{FILE_NAME}.json", "w") as f:
-            json.dump(saved_data + umcbl_chg, f, indent=4)
+        save_json_file(saved_data + umcbl_chg)
