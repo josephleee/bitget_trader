@@ -75,8 +75,8 @@ else:
             p_log(f"----{k}----")
             for i in v:
                 if str(k) == "$delete":
-                    p_log(f"Delete in {i}")
-                    save_json_file(saved_data.pop(i))
+                    p_log(f"Delete in {i}: {saved_data.pop(i)}")
+                    save_json_file(saved_data)
                 else:
                     p_log("{}: {}".format(i[0], i[1]))
                     symbolId = i[1]
@@ -84,22 +84,22 @@ else:
                         umcbl_chg.append(i[1])
 
         p_log(f"Changes: {umcbl_chg}")
-    if umcbl_chg:
-        bitget = BitgetOrder()
-        try:
-            if len(umcbl_chg) > 3:
-                raise ValueError(f"Too many updated symbols: {len(umcbl_chg)}\n{umcbl_chg}")
-            for symbol in umcbl_chg:
-                if ENV == "prod":
-                    orders = bitget.order(symbol, margin_mode="cross", amount=100, leverage=5)
-                    send_message_to_slack(f"symbol: {symbol}")
-                    send_message_to_slack(orders)
-                else:
-                    send_message_to_slack(f"symbol: {symbol}")
-        except Exception as e:
-            send_message_to_slack(str(e))
+        if umcbl_chg:
+            bitget = BitgetOrder()
+            try:
+                if len(umcbl_chg) > 3:
+                    raise ValueError(f"Too many updated symbols: {len(umcbl_chg)}\n{umcbl_chg}")
+                for symbol in umcbl_chg:
+                    if ENV == "prod":
+                        # orders = bitget.order(symbol, margin_mode="cross", amount=100, leverage=5)
+                        send_message_to_slack(f"symbol: {symbol}")
+                        # send_message_to_slack(orders)
+                    else:
+                        send_message_to_slack(f"symbol: {symbol}")
+            except Exception as e:
+                send_message_to_slack(str(e))
 
-        send_message_to_slack(f"symbols: {umcbl_chg}")
+            send_message_to_slack(f"symbols: {umcbl_chg}")
 
-        # Save new response to file
-        save_json_file(saved_data + umcbl_chg)
+            # Save new response to file
+            save_json_file(saved_data + umcbl_chg)
